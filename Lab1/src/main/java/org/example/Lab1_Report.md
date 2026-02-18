@@ -43,9 +43,97 @@ Imagine a simple machine that reads an input (like a string of symbols) step by 
 
    d. For the Finite Automaton, please add a method that checks if an input string can be obtained via the state transition from it;
 
-## Implementation description
+# Implementation description
+## Grammar → String Generation & Finite Automaton (Java)
 
+## Overview
+This project models a **right-linear grammar**, generates sample strings from it,  
+and converts the grammar into a **finite automaton (FA)** to validate strings.
 
+---
+
+## Components
+
+### `Main`
+- Defines:
+    - Non-terminals: `S, A, B`
+    - Terminals: `a, b, c`
+    - Production rules (Map<String, List<String>>)
+    - Start symbol: `S`
+- Responsibilities:
+    - Build a `Grammar` object
+    - Generate random valid strings
+    - Convert grammar → finite automaton
+    - Test valid and invalid words
+
+---
+
+### `Grammar`
+Represents a formal grammar \( G = (Vn, Vt, P, S) \).
+
+**Fields**
+- `nonTerminals` — set of non-terminal symbols
+- `terminals` — set of terminal symbols
+- `productions` — production rules
+- `startSymbol` — initial symbol
+
+**Key Methods**
+
+`generateStrings()`
+- Generates 5 random words from the grammar
+- Uses recursive derivation from `S`
+
+`generateWord(symbol)`
+- If symbol is terminal → return it
+- Else:
+    - Randomly select a production
+    - Recursively expand each symbol
+- Produces a terminal-only string
+
+`toFiniteAutomaton()`
+- Converts grammar to FA:
+    - States = non-terminals
+    - Alphabet = terminals
+    - Transitions derived from productions
+    - Initial state = start symbol
+    - Final states inferred from terminal productions
+
+---
+
+### `FiniteAutomata`
+Models FA \( M = (Q, Σ, δ, q0, F) \).
+
+**Fields**
+- `states (Q)`
+- `alphabet (Σ)`
+- `transitions (δ)`
+- `initialState (q0)`
+- `finalStates (F)`
+
+**Method**
+
+`stringBelongsToLanguage(input)`
+- Start from `q0`
+- For each symbol:
+    - Follow valid transitions
+    - Track possible states
+- Accept if any final state is reached
+- Reject if no transition exists
+
+---
+
+## Workflow
+1. Define grammar
+2. Generate valid strings
+3. Convert grammar → FA
+4. Validate strings with FA
+
+---
+
+## Notes
+- Uses randomness for derivation
+- Supports non-deterministic transitions
+- Demonstrates equivalence of regular grammars and finite automata
 
 
 ## Conclusions / Screenshots / Results

@@ -27,7 +27,7 @@ public class FiniteAutomata {
     }
 
     public boolean stringBelongsToLanguage(String inputString) {
-        Set<String> currentStates = Set.of(initialState); // Начинаем с начального состояния
+        Set<String> currentStates = Set.of(initialState); // Start with the start state
 
         for (char symbol : inputString.toCharArray()) {
             Set<String> nextStates = new java.util.HashSet<>();
@@ -39,12 +39,12 @@ public class FiniteAutomata {
             }
 
             if (nextStates.isEmpty()) {
-                return false; // Если не осталось состояний для перехода — строка не принимается
+                return false; // If there is no states to continue than this part ends
             }
             currentStates = nextStates;
         }
 
-        // Проверяем, есть ли хотя бы одно состояние, которое является конечным
+        // Checking if there is a state that finalize with the final state
         for (String state : currentStates) {
             if (finalStates.contains(state)) {
                 return true;

@@ -1,8 +1,6 @@
 package org.example;
 import java.util.*;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     private static Map<String, List<String>> rules = new HashMap<>();
 
@@ -32,7 +30,7 @@ public class Main {
         }
 
         // Controls wrong numbers to check if the automaton works correctly
-        List<String> incorrectWords = Arrays.asList("xyz", "abc", "da", "ae", "cc", "fS", "rL", "aee");
+        List<String> incorrectWords = Arrays.asList("xyz", "abc", "ba", "ae", "bc", "fS", "rL", "aee");
 
         System.out.println("\nControl wrong words");
         for (String word : incorrectWords) {
