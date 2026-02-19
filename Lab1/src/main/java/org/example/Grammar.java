@@ -60,7 +60,7 @@ public class Grammar {
             return symbol; // If it's a terminal symbol, just return it
         }
 
-        // Choosing a random choice out of their variants
+        // Choosing a random choice out of the variants
         String rule = productions.get(symbol).get(random.nextInt(productions.get(symbol).size()));
 
         // Recursively work with each non-terminal number

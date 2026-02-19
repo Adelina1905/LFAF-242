@@ -44,7 +44,7 @@ Imagine a simple machine that reads an input (like a string of symbols) step by 
    d. For the Finite Automaton, please add a method that checks if an input string can be obtained via the state transition from it;
 
 # Implementation description
-## Grammar → String Generation & Finite Automaton (Java)
+## Grammar, String Generation & Finite Automaton (Java)
 
 ## Overview
 This project models a **right-linear grammar**, generates sample strings from it,  
@@ -63,7 +63,7 @@ and converts the grammar into a **finite automaton (FA)** to validate strings.
 - Responsibilities:
     - Build a `Grammar` object
     - Generate random valid strings
-    - Convert grammar → finite automaton
+    - Convert grammar to finite automaton
     - Test valid and invalid words
 
 ---
@@ -72,23 +72,74 @@ and converts the grammar into a **finite automaton (FA)** to validate strings.
 Represents a formal grammar \( G = (Vn, Vt, P, S) \).
 
 **Fields**
-- `nonTerminals` — set of non-terminal symbols
-- `terminals` — set of terminal symbols
-- `productions` — production rules
-- `startSymbol` — initial symbol
+- `private Set<String> nonTerminals;`
+- `private Set<String> terminals;`
+- `private Map<String, List<String>> productions;`
+- `private String startSymbol;`
 
 **Key Methods**
 
 `generateStrings()`
-- Generates 5 random words from the grammar
-- Uses recursive derivation from `S`
+Generates 5 valid words from the grammar:
+```
+public void generateStrings() {
+    for (int i = 0; i < 5; i++) {
+        System.out.println(generateWord(startSymbol));
+    }
+}
+```
 
 `generateWord(symbol)`
-- If symbol is terminal → return it
-- Else:
+
+Recursively generates a word from a given symbol.
+
+Logic:
+- If symbol is terminal then return it, else:
     - Randomly select a production
     - Recursively expand each symbol
 - Produces a terminal-only string
+
+Example implementation:
+
+```
+private String generateWord(String symbol) {
+    if (terminals.contains(symbol)) {
+        return symbol;
+    }
+
+    Random random = new Random();
+    List<String> rules = productions.get(symbol);
+
+    String chosenRule = rules.get(random.nextInt(rules.size()));
+    StringBuilder result = new StringBuilder();
+
+    for (int i = 0; i < chosenRule.length(); i++) {
+        String currentSymbol = String.valueOf(chosenRule.charAt(i));
+        result.append(generateWord(currentSymbol));
+    }
+
+    return result.toString();
+}
+```
+`Example Derivation`
+
+Given:
+```
+S → aA
+A → bS
+S → bB
+B → a
+```
+
+Possible derivation:
+```
+S
+→ aA
+→ abS
+→ abbB
+→ abba
+```
+Generated word: `abba`
 
 `toFiniteAutomaton()`
 - Converts grammar to FA:
@@ -119,14 +170,6 @@ Models FA \( M = (Q, Σ, δ, q0, F) \).
     - Track possible states
 - Accept if any final state is reached
 - Reject if no transition exists
-
----
-
-## Workflow
-1. Define grammar
-2. Generate valid strings
-3. Convert grammar → FA
-4. Validate strings with FA
 
 ---
 

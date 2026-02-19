@@ -36,7 +36,5 @@ public class Main {
         for (String word : incorrectWords) {
             System.out.println(word + " are in grammar " + fa.stringBelongsToLanguage(word));
         }
-
-
     }
 }

@@ -39,7 +39,7 @@ public class FiniteAutomata {
             }
 
             if (nextStates.isEmpty()) {
-                return false; // If there is no states to continue than this part ends
+                return false; // If there is no states to continue than it ends
             }
             currentStates = nextStates;
         }
