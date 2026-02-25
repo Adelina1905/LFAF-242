@@ -1,10 +1,10 @@
-package org.example;
+package org.example.Lab2;
 
 import java.util.*;
 
 public class Grammar {
     private Set<String> nonTerminals;    // V_n
-    private Set<String> terminals;
+    private Set<String> terminals;  //V_T
     private static Map<String, List<String>> productions; // P (rules)
     private String startSymbol; // S
     private static Random random = new Random();
@@ -30,6 +30,22 @@ public class Grammar {
         }
 
         return generatedStrings;
+    }
+
+    public Set<String> getNonTerminals() {
+        return nonTerminals;
+    }
+
+    public Set<String> getTerminals() {
+        return terminals;
+    }
+
+    public static Map<String, List<String>> getProductions() {
+        return productions;
+    }
+
+    public String getStartSymbol() {
+        return startSymbol;
     }
 
     public FiniteAutomata toFiniteAutomaton() {
@@ -70,4 +86,56 @@ public class Grammar {
         }
         return result.toString();
     }
-}
+
+
+    public String classifyGrammar() {
+        boolean isType3 = true;
+        boolean isType2 = true;
+        boolean isType1 = true;
+
+        for (Map.Entry<String, List<String>> entry : productions.entrySet()) {
+            String left = entry.getKey();
+            List<String> rights = entry.getValue();
+
+            for (String rightSide : rights) {
+                // Type 3 (Regular) Grammar check
+                // Right-linear: A → aB or A → a
+                // Left-linear: A → Ba or A → a
+                boolean isValidType3 = false;
+                if (rightSide.length() <= 1) {
+                    isValidType3 = terminals.contains(rightSide);
+                } else if (rightSide.length() == 2) {
+                    String firstChar = rightSide.substring(0, 1);
+                    String secondChar = rightSide.substring(1);
+                    isValidType3 = (terminals.contains(firstChar) && nonTerminals.contains(secondChar)) ||
+                            (nonTerminals.contains(firstChar) && terminals.contains(secondChar));
+                }
+                if (!isValidType3) {
+                    isType3 = false;
+                }
+
+                // Type 2 (Context-Free) Grammar check
+                // A → α, where A is a non-terminal and α is a string of terminals and non-terminals
+                if (left.length() != 1 || !nonTerminals.contains(left)) {
+                    isType2 = false;
+                }
+
+                // Type 1 (Context-Sensitive) Grammar check
+                // αAβ → αγβ, where |γ| >= |A|
+                if (rightSide.length() < left.length()) {
+                    isType1 = false;
+                }
+            }
+        }
+        if (isType3) {
+            return "Type 3: Regular Grammar";
+        } else if (isType2) {
+            return "Type 2: Context-Free Grammar";
+        } else if (isType1) {
+            return "Type 1: Context-Sensitive Grammar";
+        } else {
+            return "Type 0: Unrestricted Grammar";
+        }
+
+    }
+    }

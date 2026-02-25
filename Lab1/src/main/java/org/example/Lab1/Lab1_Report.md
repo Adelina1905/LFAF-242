@@ -183,7 +183,7 @@ Models FA \( M = (Q, Σ, δ, q0, F) \).
 
 In conclusion, this lab gave me a nice opportunity to practice classes in JS (I didn't work with them for a long time). Also, due to this lab, I improved my knowledge about grammar and finite automaton and sustained my knowledge with practical tasks.
 
-![Results of the laboratory work](../../../resources/LFA-lab1.png)
+![Results of the laboratory work](../../../../resources/LFA-lab1.png)
 
 
 ## References
