@@ -74,7 +74,7 @@ public class FiniteAutomata {
     }
 
     public Grammar toGrammar() {
-        // Creating states q0 -> A, q1 -> B и т. д.
+        // Creating states q0 -> A, q1 -> B and so on...
         Map<String, String> stateMapping = new HashMap<>();
         char letter = 'A';
 
@@ -134,12 +134,12 @@ public class FiniteAutomata {
     }
 
     public FiniteAutomata convertToDFA() {
-        // Очередь для обработки новых состояний DFA
+        // Queue for new DFA states
         Queue<Set<String>> queue = new LinkedList<>();
         Map<Set<String>, String> dfaStateNames = new HashMap<>();
         Map<String, Map<String, Set<String>>> dfaTransitions = new HashMap<>();
 
-        // Начальное состояние в DFA (множество состояний, достижимых из q0)
+        // Start state in DFA (states that comes from q0)
         Set<String> dfaStartState = epsilonClosure(Set.of(initialState));
         queue.add(dfaStartState);
         String dfaStartName = generateStateName(dfaStartState);

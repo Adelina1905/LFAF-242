@@ -51,15 +51,14 @@ public class Main {
 
         System.out.println("_________________________________________");
 
-        Set<String> states = new HashSet<>(Arrays.asList("q0", "q1", "q2", "q3", "q4"));
-        Set<String> alphabet = new HashSet<>(Arrays.asList("a", "b", "c"));
-        Set<String> finalStates = new HashSet<>(Collections.singletonList("q4"));
+        Set<String> states = new HashSet<>(Arrays.asList("q0", "q1", "q2", "q3"));
+        Set<String> alphabet = new HashSet<>(Arrays.asList("a", "b"));
+        Set<String> finalStates = new HashSet<>(Collections.singletonList("q3"));
         Map<String, Map<String, Set<String>>> transitions = new HashMap<>();
 
-        transitions.put("q0", Map.of("a", Set.of("q1")));
-        transitions.put("q1", Map.of("b", Set.of("q2", "q3")));
-        transitions.put("q2", Map.of("c", Set.of("q3")));
-        transitions.put("q3", Map.of("a", Set.of("q3"), "b", Set.of("q4")));
+        transitions.put("q0", Map.of("a", Set.of("q1"), "b", Set.of("q2")));
+        transitions.put("q1", Map.of("a", Set.of("q1", "q3"), "b", Set.of("q2")));
+        transitions.put("q2", Map.of("b", Set.of("q3")));
 
         FiniteAutomata fa1 = new FiniteAutomata(states, alphabet, transitions, "q0", finalStates);
         Grammar grammar1 = fa1.toGrammar();
@@ -82,10 +81,10 @@ public class Main {
         System.out.println(fa1.isDeterministic());
         FiniteAutomata dfa = fa1.convertToDFA();
 
-        System.out.println("DFA Состояния: " + dfa.getStates());
-        System.out.println("DFA Переходы: " + dfa.getTransitions());
-        System.out.println("DFA Начальное состояние: " + dfa.getInitialState());
-        System.out.println("DFA Конечные состояния: " + dfa.getFinalStates());
+        System.out.println("DFA States: " + dfa.getStates());
+        System.out.println("DFA Transitions: " + dfa.getTransitions());
+        System.out.println("DFA beginning state: " + dfa.getInitialState());
+        System.out.println("DFA ending state: " + dfa.getFinalStates());
 
     }
 }

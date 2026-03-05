@@ -106,7 +106,7 @@ The `generateWord` method is a private static helper function in Java that gener
     - The method uses recursion to handle nested symbols and rules, allowing for complex string generation.
 
 
-### **3. **``
+### 3.
 
 ```java
 public FiniteAutomata toFiniteAutomaton()
@@ -385,3 +385,4 @@ One of the main takeaways from this lab was the importance of understanding the 
 ## References
 - https://github.com/filpatterson/DSL_laboratory_works/blob/master/1_RegularGrammars/task.md
 - https://en.wikipedia.org/wiki/Finite-state_machine
+- https://www.geeksforgeeks.org/theory-of-computation/conversion-from-nfa-to-dfa/
