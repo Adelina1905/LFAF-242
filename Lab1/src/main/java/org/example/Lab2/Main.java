@@ -71,7 +71,6 @@ public class Main {
         System.out.println("_________________");
         System.out.println("_________________");
         System.out.println("_________________");
-        List<String> generatedWords11 = grammar1.generateStrings();
 
         System.out.println(grammar.getNonTerminals());
         System.out.println(grammar.getTerminals());
