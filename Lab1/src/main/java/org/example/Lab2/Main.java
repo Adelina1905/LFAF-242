@@ -69,8 +69,7 @@ public class Main {
         System.out.println(grammar1.getProductions());
         System.out.println(grammar1.getStartSymbol());
         System.out.println("_________________");
-        System.out.println("_________________");
-        System.out.println("_________________");
+
 
         System.out.println(grammar.getNonTerminals());
         System.out.println(grammar.getTerminals());

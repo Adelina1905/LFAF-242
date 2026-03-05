@@ -85,25 +85,25 @@ public class FiniteAutomata {
 
         Set<String> nonTerminals = new HashSet<>();
         for (String state : states) {
-            nonTerminals.add(stateMapping.get(state)); // Добавляем переименованные состояния
+            nonTerminals.add(stateMapping.get(state)); // Adding renamed states
         }
 
         Set<String> terminals = new HashSet<>(alphabet);
         Map<String, List<String>> newProductions = new HashMap<>();
 
         for (String state : transitions.keySet()) {
-            String newState = stateMapping.get(state); // Получаем новое имя состояния
+            String newState = stateMapping.get(state); // Getting the new state name
             Map<String, Set<String>> stateTransitions = transitions.get(state);
             List<String> transitionList = new ArrayList<>();
 
             for (Map.Entry<String, Set<String>> entry : stateTransitions.entrySet()) {
-                String symbol = entry.getKey(); // буква ('a', 'b', 'c' и т.д.)
+                String symbol = entry.getKey(); // letters ('a', 'b', 'c' и т.д.)
                 for (String nextState : entry.getValue()) {
-                    transitionList.add(symbol + stateMapping.get(nextState)); // Заменяем на новую букву
+                    transitionList.add(symbol + stateMapping.get(nextState)); // Changing to a new letter
                 }
             }
 
-            // Если состояние является конечным, добавляем "epsilon"
+            // If the state is final, adding "epsilon"
             if (finalStates.contains(state)) {
                 transitionList.add("ε");
             }
@@ -111,7 +111,7 @@ public class FiniteAutomata {
             newProductions.put(newState, transitionList);
         }
 
-        // Добавляем epsilon для финальных состояний, даже если у них нет переходов
+        // Adding epsilon for final states, even if there are no transitions
         for (String finalState : finalStates) {
             String newFinalState = stateMapping.get(finalState);
             newProductions.putIfAbsent(newFinalState, new ArrayList<>(List.of("ε")));

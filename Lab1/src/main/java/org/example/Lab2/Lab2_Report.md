@@ -378,7 +378,7 @@ Computes the epsilon closure of a set of states in an NFA. The epsilon closure i
 This laboratory work provided a valuable opportunity to deepen my understanding of formal languages and finite automata through practical implementation. By working with classes in Java, I was able to reinforce my programming skills, particularly in object-oriented design, which I hadn't practiced in a while. The tasks involved implementing key concepts such as grammar classification, finite automaton conversion, and determinism checks, which allowed me to apply theoretical knowledge to real-world problems.
 
 One of the main takeaways from this lab was the importance of understanding the relationship between grammars and automata. By converting a grammar into a finite automaton and vice versa, I gained insight into how these two formalisms are interconnected. Additionally, implementing algorithms to classify grammars based on the Chomsky hierarchy and to convert non-deterministic finite automata (NFA) into deterministic finite automata (DFA) helped solidify my understanding of these concepts
-![Результаты лабораторной работы](../../../../resources/LFA-lab2.png)
+![Rezultatele](../../../../resources/LFA-lab2.png)
 
 *As we can see, the results are good...*
 
