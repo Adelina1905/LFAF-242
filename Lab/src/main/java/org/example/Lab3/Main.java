@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Main {
     static void main( String[] args) {
-        String input = "move left attack goblin jump collect coin move to (10, 90)";
+        String input = "move forward to dragon teleport (10, 9)";
 
         Lexer lexer = new Lexer(input);
 
