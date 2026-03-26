@@ -113,7 +113,7 @@ The main execution flow demonstrates good software engineering practices by clea
 String[] regexPatterns = {
                 "O(P|Q|R)+2(3|4)",
                 "A*B(C|D|E)F(G|H|I)^2",
-                "J+K(L|M|N)*O?(P|Q){3}"
+                "J+K(L|M|N)*O?(P|Q)^3"
         };
 
         // Initialize helper classes
