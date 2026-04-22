@@ -1,4 +1,4 @@
-package org.example.Lab6;
+package org.example.Lab6.parser;
 
 public enum TokenType {
     COMMAND,

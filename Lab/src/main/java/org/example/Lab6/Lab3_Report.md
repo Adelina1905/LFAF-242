@@ -1,246 +1,201 @@
-# Lexer & Scanner
+# Parser & Building an Abstract Syntax Tree for a Game Command Language
 
 ### Course: Formal Languages & Finite Automata
-### Author: Temciuc Adelina
+### Author: Temciuc Adelina, FAF-242
 
-----
+---
 
-## Theory
+## Overview
 
-A **Lexer**, also known as a lexical analyzer, is a fundamental component of a compiler or interpreter that processes input text and converts it into a sequence of tokens. A token is a structured representation of meaningful elements in a programming language, such as keywords, identifiers, literals, operators, and punctuation. The lexer plays a crucial role in breaking down the raw input into a form that is easier for subsequent stages, like parsing, to process.
+Parsing is the process of analyzing a sequence of tokens to determine its grammatical structure according to a given formal grammar. The result is often a parse tree or an Abstract Syntax Tree (AST) – a hierarchical representation that captures the essential syntactic structure of the input while abstracting away superficial details like parentheses or whitespace. ASTs are widely used in compilers, interpreters, and domain‑specific languages because they separate parsing from execution or code generation.
 
-- A lexer operates using a set of predefined rules, often specified using regular expressions or finite automata, to recognize and classify different tokens. It scans the input sequentially, grouping characters into meaningful units.
-- The concept of lexical analysis can be related to finite automata, as a lexer can be implemented using **Deterministic Finite Automata (DFA)** or **Nondeterministic Finite Automata (NFA)** to efficiently recognize token patterns.
+This report presents a parser and AST for a simple game command language. The language supports commands such as `move`, `attack`, `jump`, `collect`, and `teleport`, each with optional arguments (directions, targets, items, or coordinates). The implementation includes a lexer that uses regular expressions to classify tokens, a recursive‑descent parser that builds an AST, and a set of AST node classes that can be easily extended for interpretation or code generation.
 
-A **Deterministic Lexer** follows a strict rule where, given a current state and an input character, there is only one possible next state. This approach ensures predictability and efficiency. On the other hand, a **Nondeterministic Lexer** may have multiple possible transitions for a given input, requiring additional steps to resolve ambiguity, such as backtracking or lookahead techniques.
+---
 
-Lexers can be categorized based on their complexity and functionality:
-- **Simple Lexers** work with a basic set of rules and operate in a single pass, making them efficient for straightforward tokenization tasks.
-- **Complex Lexers** may involve multiple passes, require symbol tables, and handle context-sensitive lexical analysis, such as resolving reserved keywords from identifiers.
+## Objectives
 
-Despite its role as a separate phase in many compiler architectures, lexical analysis is closely tied to syntax analysis, as the output of the lexer serves as the input for the parser. Optimizing the lexer for efficiency ensures faster and more reliable language processing.
+1. Get familiar with parsing, its principles, and manual implementation techniques.
+2. Understand the concept of an Abstract Syntax Tree (AST) and its advantages over raw parse trees.
+3. Extend the previous lab work (Lab 3 – lexical analysis) by:
+    - Using **regular expressions** to identify token types.
+    - Implementing **AST data structures** tailored to the game command language.
+    - Building a **simple parser** that extracts syntactic information and constructs an AST from the input text.
 
-
-## Objectives:
-
-- Understand what lexical analysis [1] is.
-
-- Get familiar with the inner workings of a lexer/scanner/tokenizer.
-
-- Implement a sample lexer and show how it works.
-
-Note: Just because too many students were showing me the same idea of lexer for a calculator, I've decided to specify requirements for such case. Try to make it at least a little more complex. Like, being able to pass integers and floats, also to be able to perform trigonometric operations (cos and sin). But it does not mean that you need to do the calculator, you can pick anything interesting you want
+---
 
 ## Implementation Description
 
-The **Lexer** class is responsible for tokenizing an input string into meaningful components, which can then be used for parsing. The lexer scans the input, identifies tokens based on predefined rules, and classifies them into categories such as **keywords**, **identifiers**, **numbers**, **strings**, **operators**.
+### Lexical Analysis (Tokenizer)
 
-# Core Functionalities
-
-## Lexer Class
-
-The **Lexer** class is the central component of this lexical analysis implementation. Its role is to process an input command string and convert it into a sequence of tokens. These tokens represent meaningful elements of a simple game command language, such as commands, directions, targets, items, numbers, and punctuation symbols.
-
-Unlike traditional character-by-character lexers, this implementation processes the input primarily by splitting it into words and symbols and then classifying each element according to predefined language rules.
-
----
-
-## Key Components of the Lexer
-
-The lexer defines several predefined sets that represent the vocabulary of the command language. These sets allow the lexer to quickly determine the role of each word encountered in the input.
-
-### Commands
-
-The `COMMANDS` set defines all valid actions that a player can perform in the game. These include commands such as `move`, `attack`, `jump`, `teleport` and `collect`. Whenever one of these words appears in the input, the lexer generates a `COMMAND` token.
-
-### Directions
-
-The `DIRECTIONS` set contains words describing movement directions. Examples include `left`, `right`, `forward`, and `back`. These words are recognized as `DIRECTION` tokens and are typically used together with movement commands.
-
-### Targets
-
-The `TARGETS` set defines entities in the game world that the player can interact with. Examples include `goblin`, `dragon`, `villager`, and `knight`. When one of these words appears, the lexer creates a `TARGET` token.
-
-### Items
-
-The `ITEMS` set contains collectible objects such as `coin`, `potion`, and `key`. These words are converted into `ITEM` tokens.
-
-### Keywords
-
-The `KEYWORDS` set contains structural words that connect different parts of a command. In this implementation the keywords include `to` and `at`, and they generate `KEYWORD` tokens.
-
----
-
-## Fields
-
-The lexer maintains several internal fields used during the tokenization process.
-
-The `input` field stores the original command string that needs to be analyzed. This string represents the raw input provided by the user.
-
-The `tokens` field is a list that stores all tokens produced during lexical analysis. As the lexer processes the input, it continuously adds new tokens to this list.
-
-The `pos` field represents the current position in the input string. Although the current implementation primarily relies on word splitting rather than character scanning, the position variable can be used to track the lexer’s progress if needed.
-
----
-
-## Constructor
-
-The constructor initializes the lexer with the provided input string.
+The lexer (`Lexer.java`) reads an input string and breaks it into a list of tokens. Unlike the previous lab, token types are now identified using **regular expressions** for clarity and maintainability.
 
 ```java
-public Lexer(String input) {
-    this.input = input;
+private static final List<PatternEntry> PATTERNS = Arrays.asList(
+    new PatternEntry(TokenType.COMMAND,   Pattern.compile("^(move|attack|jump|collect|teleport)$")),
+    new PatternEntry(TokenType.DIRECTION, Pattern.compile("^(left|right|forward|back)$")),
+    new PatternEntry(TokenType.TARGET,    Pattern.compile("^(goblin|dragon|villager|knight)$")),
+    new PatternEntry(TokenType.ITEM,      Pattern.compile("^(coin|potion|key)$")),
+    new PatternEntry(TokenType.KEYWORD,   Pattern.compile("^(to|at)$")),
+    new PatternEntry(TokenType.NUMBER,    Pattern.compile("^\\d+$")),
+    new PatternEntry(TokenType.LPAREN,    Pattern.compile("^\\(")),
+    new PatternEntry(TokenType.RPAREN,    Pattern.compile("^\\)")),
+    new PatternEntry(TokenType.COMMA,     Pattern.compile("^,$")),
+    new PatternEntry(TokenType.IDENTIFIER, Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*$"))
+);
+```
+
+Before tokenization, the input is preprocessed by adding spaces around parentheses and commas so that these symbols become separate tokens. Each word is then matched against the list of regex patterns in order; the first matching pattern determines the token type. This approach makes it easy to add new keywords or operators by simply inserting a new `PatternEntry`.
+### Parsing
+
+The `Parser` class takes the tokens from the lexer and constructs an AST. It implements a recursive descent parser with methods for parsing different grammar rules.
+
+```
+program    → command*
+command    → move | attack | jump | collect | teleport
+move       → "move" [direction] ["to" target]
+attack     → "attack" [target]
+jump       → "jump"
+collect    → "collect" [item]
+teleport   → "teleport" coordinate
+coordinate → "(" number "," number ")"
+```
+
+The parser provides a method for each nonterminal. For example, the `parseMove` method:
+
+
+```java
+private MoveNode parseMove() {
+    DirectionNode dir = null;
+    TargetNode target = null;
+
+    if (check(TokenType.DIRECTION)) {
+        dir = new DirectionNode(current().getText());
+        consume(TokenType.DIRECTION);
+    }
+    if (check(TokenType.KEYWORD) && current().getText().equals("to")) {
+        consume(TokenType.KEYWORD);
+        if (check(TokenType.TARGET)) {
+            target = new TargetNode(current().getText());
+            consume(TokenType.TARGET);
+        } else {
+            throw new RuntimeException("Expected TARGET after 'to'");
+        }
+    }
+    return new MoveNode(dir, target);
 }
 ```
 
-After the lexer object is created, the `tokenize()` method can be called to begin the lexical analysis process.
+The parser uses lookahead (peeking at the current token) to decide which grammar rule to apply. If a required token is missing, it throws a descriptive runtime exception.
+### Abstract Syntax Tree (AST)
 
----
+The AST is defined as a set of Java classes, all implementing the marker interface ASTNode. The hierarchy is designed to be both type‑safe and easy to traverse.
 
-## Main Method: tokenize()
-
-The `tokenize()` method performs the core lexical analysis. It reads the input string, separates it into smaller elements, and converts those elements into tokens.
-
-The first step of this process is preprocessing the input. Parentheses and commas are surrounded with spaces so they can be treated as independent tokens.
-
+- `CommandNode` abstract base for all commands; stores the command name.
+- `MoveNode`,`AttackNode`,`JumpNode`,`CollectNode`,`TeleportNode` concrete command nodes, each storing the relevant arguments
+- `MoveNode`,`AttackNode`,`JumpNode`,`CollectNode`  leaf nodes representing simple values.
+  All nodes override `toString()`to provide a human‑readable representation of the AST. For instance:
 ```java
-String processedInput = input.replace("(", " ( ")
-        .replace(")", " ) ")
-        .replace(",", " , ");
+public class MoveNode extends CommandNode {
+    private final DirectionNode direction;
+    private final TargetNode target;
+
+    public MoveNode(DirectionNode direction, TargetNode target) {
+        super("move");
+        this.direction = direction;
+        this.target = target;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("MoveCommand{direction=%s, target=%s}",
+                direction != null ? direction : "none",
+                target != null ? target : "none");
+    }
+}
 ```
-
-This transformation ensures that symbols such as `(`, `)` and `,` will not remain attached to surrounding words.
-
-After preprocessing, the input string is split into individual words using whitespace as a delimiter.
+This structure makes it straightforward to later implement an interpreter (by walking the AST and performing actions) or a code generator.
 
 ```java
-String[] words = processedInput.split("\\s+");
-```
+public final class BinaryExpression implements Expression {
+    private final Expression expr1, expr2;
+    private final char operation;
+    
+    // Constructor and getters...
 
-Each word in this array is then analyzed and classified according to the language rules.
-
----
-
-## Token Classification
-
-For every word encountered in the input, the lexer determines its token type through a series of conditional checks.
-
-If the word belongs to the predefined `COMMANDS` set, a `COMMAND` token is created.
-
-```java
-tokens.add(new Token(TokenType.COMMAND, word));
-```
-
-If the word belongs to the `DIRECTIONS` set, a `DIRECTION` token is generated.
-
-Words found in the `TARGETS` set produce a `TARGET` token, while words in the `ITEMS` set produce an `ITEM` token.
-
-If a word belongs to the `KEYWORDS` set, it is converted into a `KEYWORD` token.
-
-Numbers are detected using a regular expression that checks whether the word consists only of digits.
-
-```java
-word.matches("\\d+")
-```
-
-If the expression matches, the lexer generates a `NUMBER` token.
-
-The lexer also explicitly recognizes punctuation symbols used in commands. Parentheses generate `LPAREN` and `RPAREN` tokens, while commas generate `COMMA` tokens.
-
-If a word does not match any predefined category, the lexer classifies it as an `IDENTIFIER`. This allows the language to support custom names or values that are not part of the predefined vocabulary.
-
----
-
-## End of Input Handling
-
-After all words have been processed, the lexer adds a special token representing the end of the input stream.
-
-```java
-tokens.add(new Token(TokenType.EOF, ""));
-```
-
-This token helps later stages of processing, such as parsing, determine when the input has been completely analyzed.
-
----
-
-## Token Class
-
-The **Token** class represents a single lexical unit produced by the lexer. Each token contains two important pieces of information: its type and its textual representation.
-
-The `type` attribute indicates the category of the token, such as `COMMAND`, `TARGET`, or `NUMBER`. The `text` attribute stores the exact substring extracted from the input.
-
-The constructor initializes both attributes.
-
-```java
-public Token(TokenType type, String text) {
-    this.type = type;
-    this.text = text;
+    @Override
+    public double eval() {
+        switch (operation) {
+            case '-': return expr1.eval() - expr2.eval();
+            case '*': return expr1.eval() * expr2.eval();
+            case '/': return expr1.eval() / expr2.eval();
+            case '+':
+            default:
+                return expr1.eval() + expr2.eval();
+        }
+    }
+    // ...
 }
 ```
 
-The class also provides getter methods that allow other parts of the program to access the token’s type and text.
+The `BinaryExpression` class represents a binary operation (e.g., `2 + 3`). It holds the left and right operands as expressions, and the operation to perform. When evaluated, it evaluates both operands and combines them according to the operation.
 
-For debugging and visualization purposes, the `toString()` method returns a readable representation of the token.
+
+## Main Application
+
+The `Main` class ties everything together:
 
 ```java
-@Override
-public String toString() {
-    return type + " -> " + text;
+public static void main(String[] args) {
+    String input = "move forward to dragon teleport (10, 9)";
+
+    Lexer lexer = new Lexer(input);
+    List<Token> tokens = lexer.tokenize();
+
+    Parser parser = new Parser(tokens);
+    List<CommandNode> ast = parser.parseProgram();
+
+    for (CommandNode cmd : ast) {
+        System.out.println(cmd);
+    }
 }
 ```
-
-This format makes it easy to inspect the token stream produced by the lexer.
-
----
-
-## TokenType Enum
-
-The **TokenType** enumeration defines all possible token categories that can be generated during lexical analysis. These types describe the role that each token plays in the command language.
-
-```java
-COMMAND
-DIRECTION
-TARGET
-ITEM
-COMMA
-LPAREN
-RPAREN
-KEYWORD
-NUMBER
-IDENTIFIER
-EOF
+For the input `move forward to dragon teleport (10, 9)`, the output is:
+```
+MoveCommand{direction=forward, target=dragon}
+TeleportCommand{coordinate=(10,9)}
 ```
 
-These categories allow the lexer to transform raw text input into a structured representation that can later be processed by a parser or interpreter.
+This shows that the parser correctly recognises two separate commands and extracts all relevant syntactic information.
+## Core Components
+## Core Components
 
----
+| Component | Responsibility |
+|-----------|----------------|
+| `TokenType` (enum) | Defines all possible token categories (COMMAND, DIRECTION, NUMBER, LPAREN, etc.). |
+| `Lexer` | Converts raw input into a token stream using regular expressions. |
+| `Parser` | Consumes tokens and builds an AST using recursive descent. |
+| `ASTNode` interface | Marks all AST nodes. |
+| `CommandNode` abstract class | Base for all command‑related nodes. |
+| Concrete command nodes (`MoveNode`, etc.) | Represent specific commands and their arguments. |
+| Expression nodes (`DirectionNode`, `TargetNode`, etc.) | Represent simple value types used as arguments. |
+## Conclusion
 
-## Example
+This lab work successfully extends the previous lexical analyser by:
+*   Using regular expressions to classify tokens in a clean, declarative manner.
+*   Designing a full AST hierarchy that accurately models the game command language.
+*   Implementing a recursive‑descent parser that builds the AST and reports syntax errors.
+The resulting system can parse a variety of command sequences and produces a structured representation that can be easily interpreted, translated, or analysed further. The modular design allows adding new commands or modifying the grammar with minimal changes – only new AST classes and corresponding parser methods are needed.
 
-Consider the following input command:
+## References:
+[1] [Parsing Wiki](https://en.wikipedia.org/wiki/Parsing)
 
-```text
-move forward to dragon
-```
+[2] [Abstract Syntax Tree Wiki](https://en.wikipedia.org/wiki/Abstract_syntax_tree)
+ 
+[3] [3] Aho, A. V., Lam, M. S., Sethi, R., & Ullman, J. D. (2006). Compilers: Principles, Techniques, and Tools (2nd ed.). Addison‑Wesley.
 
-When the lexer processes this command, it generates the following sequence of tokens:
 
-```text
-COMMAND -> move
-DIRECTION -> forward
-KEYWORD -> to
-TARGET -> dragon
-EOF ->
-```
 
-Each token represents a specific component of the command, making it easier for the next stages of the program to understand and execute the instruction.
 
----
 
-## Summary
 
-This lexer implements a simple lexical analyzer for a small command-based language used in a game environment. By splitting the input into words and matching them against predefined categories, the lexer efficiently converts raw text into structured tokens.
-
-The produced token stream serves as the foundation for further processing steps such as parsing, interpretation, or execution of game commands.## References
-- [Wikipedia](https://en.wikipedia.org/wiki/Lexical_analysis)
-- [A sample of lexical analyzer](https://llvm.org/docs/tutorial/MyFirstLanguageFrontend/LangImpl01.html)
