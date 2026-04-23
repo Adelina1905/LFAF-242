@@ -1,4 +1,4 @@
-package org.example.Lab6.parser;
+package org.example.Lab6;
 
 import java.util.*;
 import java.util.regex.Pattern;

@@ -1,4 +1,4 @@
-package org.example.Lab6.parser;
+package org.example.Lab6;
 
 public class Token {
     private TokenType type;

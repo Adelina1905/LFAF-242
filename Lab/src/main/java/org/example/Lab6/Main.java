@@ -1,6 +1,5 @@
 package org.example.Lab6;
-import org.example.Lab6.parser.*;
-import org.example.Lab6.parser.ast.CommandNode;
+import org.example.Lab6.ast.CommandNode;
 
 import java.util.List;
 

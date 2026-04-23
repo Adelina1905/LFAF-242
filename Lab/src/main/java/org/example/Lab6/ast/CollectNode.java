@@ -1,4 +1,4 @@
-package org.example.Lab6.parser.ast;
+package org.example.Lab6.ast;
 
 public class CollectNode extends CommandNode {
     private final ItemNode item;

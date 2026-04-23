@@ -1,4 +1,4 @@
-package org.example.Lab6.parser.ast;
+package org.example.Lab6.ast;
 
 public class MoveNode extends CommandNode {
     private final DirectionNode direction;

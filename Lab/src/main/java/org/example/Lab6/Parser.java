@@ -1,5 +1,5 @@
-package org.example.Lab6.parser;
-import org.example.Lab6.parser.ast.*;
+package org.example.Lab6;
+import org.example.Lab6.ast.*;
 
 //import org.example.Lab6.Parser.*;
 
